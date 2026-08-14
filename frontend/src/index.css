@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+body {
+  font-family: "Sarabun", "IBM Plex Sans Thai", "Tahoma", system-ui, sans-serif;
+  background-color: #f3f4f6;
+}
+
+/* Print styles สำหรับเอกสาร */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    box-shadow: none !important;
+    margin: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+  .print-break {
+    page-break-after: always;
+  }
+}

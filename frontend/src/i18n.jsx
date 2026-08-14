@@ -1,0 +1,487 @@
+import { createContext, useContext, useEffect, useState } from 'react'
+
+const translations = {
+  th: {
+    app_name: 'ZemERP',
+    login: 'เข้าสู่ระบบ',
+    logout: 'ออกจากระบบ',
+    email: 'อีเมล',
+    password: 'รหัสผ่าน',
+    dashboard: 'หน้าหลัก',
+    master_data: 'ข้อมูลหลัก',
+    products: 'สินค้า',
+    partners: 'คู่ค้า',
+    chart_of_accounts: 'ผังบัญชี',
+    warehouses: 'คลังสินค้า',
+    tax_rates: 'อัตราภาษีหัก ณ ที่จ่าย',
+    purchasing: 'การซื้อ',
+    purchase_orders: 'ใบสั่งซื้อ',
+    purchase_invoices: 'ใบกำกับภาษีซื้อ',
+    sales: 'การขาย',
+    sales_orders: 'ใบสั่งขาย',
+    deliveries: 'ใบส่งสินค้า',
+    sales_invoices: 'ใบแจ้งหนี้ / ใบกำกับภาษี',
+    receipts: 'ใบเสร็จรับเงิน',
+    money: 'เงิน',
+    payments: 'รับเงิน / ชำระเงิน',
+    accounting: 'บัญชี',
+    journal_entries: 'บันทึกรายการบัญชี',
+    trial_balance: 'งบทดลอง',
+    reports: 'รายงาน',
+    sales_report: 'รายงานยอดขาย',
+    purchase_report: 'รายงานยอดซื้อ',
+    vat_report: 'รายงานภาษีซื้อ/ขาย',
+    stock_report: 'รายงานสต็อก',
+    stock_movements_report: 'รายงานการเคลื่อนไหวสต็อก',
+    stock_card: 'บัตรสต็อก',
+    wht_report: 'รายงานภาษีหัก ณ ที่จ่าย',
+    settings: 'ตั้งค่า',
+    company_settings: 'ข้อมูลบริษัท',
+    users: 'ผู้ใช้',
+    search: 'ค้นหา',
+    add: 'เพิ่ม',
+    edit: 'แก้ไข',
+    delete: 'ลบ',
+    save: 'บันทึก',
+    cancel: 'ยกเลิก',
+    close: 'ปิด',
+    confirm: 'ยืนยัน',
+    actions: 'การดำเนินการ',
+    status: 'สถานะ',
+    date: 'วันที่',
+    number: 'เลขที่',
+    partner: 'คู่ค้า',
+    total: 'รวม',
+    subtotal: 'ยอดก่อนภาษี',
+    discount: 'ส่วนลด',
+    vat: 'ภาษีมูลค่าเพิ่ม',
+    wht: 'ภาษีหัก ณ ที่จ่าย',
+    net_payable: 'ยอดสุทธิชำระ',
+    note: 'หมายเหตุ',
+    items: 'รายการ',
+    qty: 'จำนวน',
+    unit_price: 'ราคาต่อหน่วย',
+    amount: 'จำนวนเงิน',
+    product: 'สินค้า',
+    code: 'รหัส',
+    name: 'ชื่อ',
+    type: 'ประเภท',
+    all: 'ทั้งหมด',
+    new: 'ใหม่',
+    print: 'พิมพ์',
+    detail: 'ดูรายละเอียด',
+    confirm_doc: 'ยืนยันเอกสาร',
+    receive: 'รับสินค้า',
+    deliver: 'ส่งสินค้า',
+    issue: 'ออกใบแจ้งหนี้',
+    create_invoice: 'สร้างใบแจ้งหนี้',
+    record_payment: 'บันทึกการรับ/ชำระเงิน',
+    cancelled: 'ยกเลิก',
+    draft: 'ร่าง',
+    issued: 'ออกใบแล้ว',
+    partial: 'ชำระบางส่วน',
+    paid: 'ชำระครบ',
+    delivered: 'ส่งสินค้าแล้ว',
+    received: 'รับสินค้าแล้ว',
+    confirmed: 'ยืนยันแล้ว',
+    customer: 'ลูกค้า',
+    supplier: 'ผู้ขาย',
+    both: 'ทั้งสอง',
+    sale: 'ขาย',
+    purchase: 'ซื้อ',
+    in: 'รับเงิน',
+    out: 'ชำระเงิน',
+    cash: 'เงินสด',
+    bank: 'ธนาคาร',
+    transfer: 'โอนเงิน',
+    from: 'จากวันที่',
+    to: 'ถึงวันที่',
+    summary: 'สรุป',
+    total_amount: 'ยอดรวม',
+    balance: 'ยอดคงเหลือ',
+    paid_amount: 'ยอดชำระแล้ว',
+    vat_rate: 'อัตรา VAT',
+    wht_rate: 'อัตราภาษีหัก ณ ที่จ่าย',
+    warehouse: 'คลัง',
+    category: 'หมวดหมู่',
+    unit: 'หน่วย',
+    purchase_price: 'ราคาซื้อ',
+    sale_price: 'ราคาขาย',
+    stock: 'สต็อก',
+    stock_on_hand: 'สต็อกคงเหลือ',
+    tax_id: 'เลขประจำตัวผู้เสียภาษี',
+    address: 'ที่อยู่',
+    phone: 'โทรศัพท์',
+    contact: 'ผู้ติดต่อ',
+    account_code: 'รหัสบัญชี',
+    account_name: 'ชื่อบัญชี',
+    debit: 'เดบิต',
+    credit: 'เครดิต',
+    description: 'รายละเอียด',
+    journal_type: 'ประเภท',
+    entry_number: 'เลขที่รายการ',
+    created_by: 'ผู้บันทึก',
+    company: 'บริษัท',
+    company_name: 'ชื่อบริษัท',
+    logo: 'โลโก้',
+    gl_accounts: 'การตั้งค่าบัญชี GL',
+    account_mapping: 'การแมปบัญชี',
+    document_footer: 'ข้อความท้ายเอกสาร',
+    welcome: 'ยินดีต้อนรับ',
+    today_sales: 'ยอดขายวันนี้',
+    month_sales: 'ยอดขายเดือนนี้',
+    month_purchases: 'ยอดซื้อเดือนนี้',
+    receivable: 'ลูกหนี้คงค้าง',
+    payable: 'เจ้าหนี้คงค้าง',
+    low_stock: 'สินค้าใกล้หมด',
+    recent_invoices: 'ใบแจ้งหนี้ล่าสุด',
+    monthly_sales_chart: 'ยอดขาย 6 เดือน',
+    no_data: 'ไม่มีข้อมูล',
+    back: 'กลับ',
+    view_print: 'ดูตัวอย่าง / พิมพ์',
+    receipt: 'ใบเสร็จรับเงิน',
+    delivery_note: 'ใบส่งสินค้า',
+    invoice_doc: 'ใบแจ้งหนี้ / ใบกำกับภาษี',
+    sales_order_doc: 'ใบสั่งขาย',
+    purchase_order_doc: 'ใบสั่งซื้อ',
+    payment_method: 'ช่องทางการชำระ',
+    reference: 'อ้างอิง',
+    wht_amount: 'ยอดภาษีหัก ณ ที่จ่าย',
+    base_amount: 'ฐานภาษี',
+    total_in: 'รวมรับ',
+    total_out: 'รวมจ่าย',
+    net_vat: 'ภาษีสุทธิ',
+    output_vat: 'ภาษีขาย',
+    input_vat: 'ภาษีซื้อ',
+    valuation: 'มูลค่า',
+    avg_cost: 'ต้นทุนเฉลี่ย',
+    generated: 'ระบบ',
+    manual: 'บันทึกมือ',
+    role: 'สิทธิ์',
+    admin: 'ผู้ดูแล',
+    staff: 'พนักงาน',
+    language: 'ภาษา',
+    close_session: 'สิ้นสุดการใช้งาน',
+    expected_date: 'กำหนดรับ/ส่ง',
+    due_date: 'วันครบกำหนด',
+    download: 'ดาวน์โหลด',
+    sold_to: 'ผู้ขายให้ / ลูกค้า',
+    company_info: 'ข้อมูลบริษัท',
+    product_qty_total: 'จำนวนสินค้าทั้งหมด',
+    total_value: 'มูลค่ารวม',
+    top_products: 'สินค้าขายดี',
+    by_partner: 'แยกตามคู่ค้า',
+    daily: 'รายวัน',
+    account: 'บัญชี',
+    posting: 'การลงบัญชี',
+    all_status: 'ทุกสถานะ',
+    all_types: 'ทุกประเภท',
+    currency: 'บาท',
+    document: 'เอกสาร',
+    delivery: 'ใบส่งสินค้า',
+    payment_in: 'รับเงิน',
+    payment_out: 'ชำระเงิน',
+    general: 'บันทึกมือ',
+    unit_cost: 'ต้นทุน/หน่วย',
+    in_qty: 'รับเข้า',
+    out_qty: 'จ่ายออก',
+    opening_balance: 'ยอดยกมา',
+    closing_balance: 'ยอดยกไป',
+    all_products: 'สินค้าทั้งหมด',
+    choose_product: 'เลือกสินค้า',
+    adjust_stock: 'ปรับยอดสต็อก',
+    product_image: 'รูปสินค้า',
+    upload_image: 'เลือกรูป',
+    remove_image: 'ลบรูป',
+  },
+  en: {
+    app_name: 'ZemERP',
+    login: 'Login',
+    logout: 'Logout',
+    email: 'Email',
+    password: 'Password',
+    dashboard: 'Dashboard',
+    master_data: 'Master Data',
+    products: 'Products',
+    partners: 'Partners',
+    chart_of_accounts: 'Chart of Accounts',
+    warehouses: 'Warehouses',
+    tax_rates: 'Withholding Tax Rates',
+    purchasing: 'Purchasing',
+    purchase_orders: 'Purchase Orders',
+    purchase_invoices: 'Purchase Invoices',
+    sales: 'Sales',
+    sales_orders: 'Sales Orders',
+    deliveries: 'Delivery Notes',
+    sales_invoices: 'Invoices / Tax Invoices',
+    receipts: 'Receipts',
+    money: 'Money',
+    payments: 'Payments',
+    accounting: 'Accounting',
+    journal_entries: 'Journal Entries',
+    trial_balance: 'Trial Balance',
+    reports: 'Reports',
+    sales_report: 'Sales Report',
+    purchase_report: 'Purchase Report',
+    vat_report: 'VAT Report',
+    stock_report: 'Stock Report',
+    stock_movements_report: 'Stock Movement Report',
+    stock_card: 'Stock Card',
+    wht_report: 'Withholding Tax Report',
+    settings: 'Settings',
+    company_settings: 'Company Settings',
+    users: 'Users',
+    search: 'Search',
+    add: 'Add',
+    edit: 'Edit',
+    delete: 'Delete',
+    save: 'Save',
+    cancel: 'Cancel',
+    close: 'Close',
+    confirm: 'Confirm',
+    actions: 'Actions',
+    status: 'Status',
+    date: 'Date',
+    number: 'Number',
+    partner: 'Partner',
+    total: 'Total',
+    subtotal: 'Subtotal',
+    discount: 'Discount',
+    vat: 'VAT',
+    wht: 'Withholding Tax',
+    net_payable: 'Net Payable',
+    note: 'Note',
+    items: 'Items',
+    qty: 'Qty',
+    unit_price: 'Unit Price',
+    amount: 'Amount',
+    product: 'Product',
+    code: 'Code',
+    name: 'Name',
+    type: 'Type',
+    all: 'All',
+    new: 'New',
+    print: 'Print',
+    detail: 'Detail',
+    confirm_doc: 'Confirm Document',
+    receive: 'Receive',
+    deliver: 'Deliver',
+    issue: 'Issue Invoice',
+    create_invoice: 'Create Invoice',
+    record_payment: 'Record Payment',
+    cancelled: 'Cancelled',
+    draft: 'Draft',
+    issued: 'Issued',
+    partial: 'Partially Paid',
+    paid: 'Paid',
+    delivered: 'Delivered',
+    received: 'Received',
+    confirmed: 'Confirmed',
+    customer: 'Customer',
+    supplier: 'Supplier',
+    both: 'Both',
+    sale: 'Sale',
+    purchase: 'Purchase',
+    in: 'Received',
+    out: 'Paid',
+    cash: 'Cash',
+    bank: 'Bank',
+    transfer: 'Transfer',
+    from: 'From',
+    to: 'To',
+    summary: 'Summary',
+    total_amount: 'Total Amount',
+    balance: 'Balance',
+    paid_amount: 'Paid Amount',
+    vat_rate: 'VAT Rate',
+    wht_rate: 'WHT Rate',
+    warehouse: 'Warehouse',
+    category: 'Category',
+    unit: 'Unit',
+    purchase_price: 'Purchase Price',
+    sale_price: 'Sale Price',
+    stock: 'Stock',
+    stock_on_hand: 'Stock on Hand',
+    tax_id: 'Tax ID',
+    address: 'Address',
+    phone: 'Phone',
+    contact: 'Contact',
+    account_code: 'Account Code',
+    account_name: 'Account Name',
+    debit: 'Debit',
+    credit: 'Credit',
+    description: 'Description',
+    journal_type: 'Type',
+    entry_number: 'Entry No.',
+    created_by: 'Created By',
+    company: 'Company',
+    company_name: 'Company Name',
+    logo: 'Logo',
+    gl_accounts: 'GL Settings',
+    account_mapping: 'Account Mapping',
+    document_footer: 'Document Footer',
+    welcome: 'Welcome',
+    today_sales: "Today's Sales",
+    month_sales: "Month Sales",
+    month_purchases: "Month Purchases",
+    receivable: 'Receivable',
+    payable: 'Payable',
+    low_stock: 'Low Stock',
+    recent_invoices: 'Recent Invoices',
+    monthly_sales_chart: 'Monthly Sales (6 Months)',
+    no_data: 'No data',
+    back: 'Back',
+    view_print: 'Preview / Print',
+    receipt: 'Receipt',
+    delivery_note: 'Delivery Note',
+    invoice_doc: 'Invoice / Tax Invoice',
+    sales_order_doc: 'Sales Order',
+    purchase_order_doc: 'Purchase Order',
+    payment_method: 'Payment Method',
+    reference: 'Reference',
+    wht_amount: 'WHT Amount',
+    base_amount: 'Base Amount',
+    total_in: 'Total In',
+    total_out: 'Total Out',
+    net_vat: 'Net VAT',
+    output_vat: 'Output VAT',
+    input_vat: 'Input VAT',
+    valuation: 'Valuation',
+    avg_cost: 'Avg Cost',
+    generated: 'Auto',
+    manual: 'Manual',
+    role: 'Role',
+    admin: 'Admin',
+    staff: 'Staff',
+    language: 'Language',
+    close_session: 'Sign out',
+    expected_date: 'Expected Date',
+    due_date: 'Due Date',
+    download: 'Download',
+    sold_to: 'Bill To',
+    company_info: 'Company Info',
+    product_qty_total: 'Total Items',
+    total_value: 'Total Value',
+    top_products: 'Top Products',
+    by_partner: 'By Partner',
+    daily: 'Daily',
+    account: 'Account',
+    posting: 'Posting',
+    all_status: 'All Status',
+    all_types: 'All Types',
+    currency: 'THB',
+    document: 'Document',
+    delivery: 'Delivery',
+    payment_in: 'Payment In',
+    payment_out: 'Payment Out',
+    general: 'Manual',
+    unit_cost: 'Unit Cost',
+    in_qty: 'In',
+    out_qty: 'Out',
+    opening_balance: 'Opening',
+    closing_balance: 'Closing',
+    all_products: 'All Products',
+    choose_product: 'Select Product',
+    adjust_stock: 'Stock Adjustment',
+    product_image: 'Product Image',
+    upload_image: 'Upload',
+    remove_image: 'Remove',
+  },
+}
+
+const LocaleContext = createContext()
+
+export function LocaleProvider({ children }) {
+  const [locale, setLocale] = useState(() => localStorage.getItem('zemerp_locale') || 'th')
+
+  useEffect(() => {
+    localStorage.setItem('zemerp_locale', locale)
+    document.documentElement.lang = locale
+  }, [locale])
+
+  const t = (key) => translations[locale][key] || key
+
+  return (
+    <LocaleContext.Provider value={{ locale, setLocale, t }}>
+      {children}
+    </LocaleContext.Provider>
+  )
+}
+
+export const useLocale = () => useContext(LocaleContext)
+
+/** รูปแบบตัวเลขเงินบาท */
+export const fmtMoney = (n, locale = 'th') =>
+  new Intl.NumberFormat(locale === 'en' ? 'en-US' : 'th-TH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(Number(n || 0))
+
+/** รูปแบบวันที่ */
+export const fmtDate = (d, locale = 'th') => {
+  if (!d) return '-'
+  const date = new Date(d)
+  if (isNaN(date)) return d
+  return date.toLocaleDateString(locale === 'en' ? 'en-GB' : 'th-TH', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
+
+export const thaiBahtText = (amount) => {
+  const num = Number(amount || 0)
+  if (num === 0) return 'ศูนย์บาทถ้วน'
+  const numText = ['', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า']
+  const unitText = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน']
+  let intPart = Math.floor(num)
+  let text = ''
+  let millionCount = 0
+
+  const readThree = (n) => {
+    let s = ''
+    const h = Math.floor(n / 100)
+    const t = Math.floor((n % 100) / 10)
+    const o = n % 10
+    if (h > 0) s += (h === 1 ? 'หนึ่ง' : numText[h]) + 'ร้อย'
+    if (t > 0) {
+      s += t === 1 ? 'สิบ' : numText[t] + 'สิบ'
+    }
+    if (o > 0) {
+      if (t > 0) {
+        s += o === 1 ? 'เอ็ด' : numText[o]
+      } else {
+        s += o === 1 && h > 0 ? 'เอ็ด' : numText[o]
+      }
+    }
+    return s
+  }
+
+  // แยกเป็นกลุ่ม 3 หลัก
+  const groups = []
+  let n = intPart
+  while (n > 0) {
+    groups.push(n % 1000)
+    n = Math.floor(n / 1000)
+  }
+
+  for (let i = groups.length - 1; i >= 0; i--) {
+    if (groups[i] > 0) {
+      text += readThree(groups[i])
+      if (i === 1) text += 'พัน'
+      if (i === 2) text += 'ล้าน'
+    }
+  }
+
+  text += 'บาท'
+
+  const satang = Math.round((num - intPart) * 100)
+  if (satang > 0) {
+    if (satang < 10) text += 'ศูนย์'
+    text += satang === 1 ? 'หนึ่งสตางค์' : satang === 10 ? 'สิบสตางค์' : satang === 20 ? 'ยี่สิบสตางค์' : satang < 20 ? 'สิบ' + (satang % 10 === 1 ? 'เอ็ด' : numText[satang % 10]) + 'สตางค์' : readThree(satang) + 'สตางค์'
+  } else {
+    text += 'ถ้วน'
+  }
+
+  return text
+}
