@@ -34,6 +34,7 @@ services:
         condition: service_healthy
     command: >
       sh -c "composer install --no-interaction &&
+             cp -n .env.example .env || true &&
              php artisan key:generate --force &&
              php artisan migrate --force &&
              php artisan db:seed --force &&
