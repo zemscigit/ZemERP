@@ -3,11 +3,13 @@ import api, { getErrorMessage } from '../../api'
 import { Badge, Button, Card, Input, Modal, Money, PageHeader, Select, Spinner, Table } from '../../components/ui'
 import { useLocale } from '../../i18n'
 
-const empty = { code: '', barcode: '', name_th: '', name_en: '', category: '', unit: 'ชิ้น', image: '', purchase_price: 0, sale_price: 0, is_active: true }
+const empty = { code: '', barcode: '', name_th: '', name_en: '', category: '', unit: 'ชิ้น', category_id: '', unit_id: '', image: '', purchase_price: 0, sale_price: 0, is_active: true }
 
 export default function Products() {
   const { t } = useLocale()
   const [rows, setRows] = useState([])
+  const [categories, setCategories] = useState([])
+  const [units, setUnits] = useState([])
   const [loading, setLoading] = useState(true)
   const [modal, setModal] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -18,8 +20,14 @@ export default function Products() {
   const load = async () => {
     setLoading(true)
     try {
-      const { data } = await api.get('/products', { params: { search, per_page: 100 } })
-      setRows(data.data)
+      const [prodRes, catRes, unitRes] = await Promise.all([
+        api.get('/products', { params: { search, per_page: 100 } }),
+        api.get('/categories'),
+        api.get('/units'),
+      ])
+      setRows(prodRes.data.data)
+      setCategories(catRes.data)
+      setUnits(unitRes.data)
     } finally {
       setLoading(false)
     }
@@ -39,7 +47,7 @@ export default function Products() {
 
   const openEdit = (row) => {
     setEditing(row)
-    setForm({ ...row })
+    setForm({ ...row, category_id: row.category_id || '', unit_id: row.unit_id || '' })
     setError('')
     setModal(true)
   }
@@ -98,8 +106,8 @@ export default function Products() {
     { key: 'image', label: '', render: (r) => r.image ? <img src={r.image} alt="" className="w-10 h-10 rounded-lg object-cover border border-gray-100" /> : <span className="inline-flex w-10 h-10 rounded-lg bg-gray-50 items-center justify-center text-lg">📦</span> },
     { key: 'code', label: t('code') },
     { key: 'name_th', label: t('name') },
-    { key: 'category', label: t('category') },
-    { key: 'unit', label: t('unit') },
+    { key: 'category_ref', label: t('category_id'), render: (r) => r.category_ref?.name || r.category || '-' },
+    { key: 'unit_ref', label: t('unit_id'), render: (r) => r.unit_ref?.name || r.unit || '-' },
     { key: 'purchase_price', label: t('purchase_price'), align: 'right', render: (r) => <Money value={r.purchase_price} /> },
     { key: 'sale_price', label: t('sale_price'), align: 'right', render: (r) => <Money value={r.sale_price} /> },
     { key: 'stock_on_hand', label: t('stock'), align: 'right', render: (r) => <span className="tabular-nums">{r.stock_on_hand}</span> },
@@ -150,8 +158,18 @@ export default function Products() {
             <Input label="Barcode" value={form.barcode} onChange={(e) => setForm({ ...form, barcode: e.target.value })} />
             <Input label={`${t('name')} (ไทย)`} value={form.name_th} onChange={(e) => setForm({ ...form, name_th: e.target.value })} required />
             <Input label={`${t('name')} (EN)`} value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} />
-            <Input label={t('category')} value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
-            <Input label={t('unit')} value={form.unit} onChange={(e) => setForm({ ...form, unit: e.target.value })} />
+            <Select
+              label={t('category_id')}
+              options={categories.map(c => ({ value: c.id, label: `${c.code} - ${c.name}` }))}
+              value={form.category_id || ''}
+              onChange={(e) => setForm({ ...form, category_id: e.target.value || null })}
+            />
+            <Select
+              label={t('unit_id')}
+              options={units.map(u => ({ value: u.id, label: `${u.code} - ${u.name}` }))}
+              value={form.unit_id || ''}
+              onChange={(e) => setForm({ ...form, unit_id: e.target.value || null })}
+            />
             <Input label={t('purchase_price')} type="number" value={form.purchase_price} onChange={(e) => setForm({ ...form, purchase_price: e.target.value })} />
             <Input label={t('sale_price')} type="number" value={form.sale_price} onChange={(e) => setForm({ ...form, sale_price: e.target.value })} />
             <Select

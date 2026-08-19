@@ -8,6 +8,8 @@ import Partners from './pages/master/Partners.jsx'
 import ChartOfAccounts from './pages/master/ChartOfAccounts.jsx'
 import Warehouses from './pages/master/Warehouses.jsx'
 import TaxRates from './pages/master/TaxRates.jsx'
+import Categories from './pages/master/Categories.jsx'
+import Units from './pages/master/Units.jsx'
 import PurchaseOrders from './pages/purchase/PurchaseOrders.jsx'
 import PurchaseOrderForm from './pages/purchase/PurchaseOrderForm.jsx'
 import PurchaseOrderDetail from './pages/purchase/PurchaseOrderDetail.jsx'
@@ -22,6 +24,7 @@ import InvoiceDetail from './pages/sales/InvoiceDetail.jsx'
 import Receipts from './pages/sales/Receipts.jsx'
 import Payments from './pages/money/Payments.jsx'
 import JournalEntries from './pages/accounting/JournalEntries.jsx'
+import GlEntries from './pages/accounting/GlEntries.jsx'
 import TrialBalance from './pages/accounting/TrialBalance.jsx'
 import SalesReport from './pages/reports/SalesReport.jsx'
 import PurchaseReport from './pages/reports/PurchaseReport.jsx'
@@ -58,6 +61,8 @@ export default function App() {
         <Route path="chart-of-accounts" element={<ChartOfAccounts />} />
         <Route path="warehouses" element={<Warehouses />} />
         <Route path="tax-rates" element={<TaxRates />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="units" element={<Units />} />
         <Route path="purchase-orders" element={<PurchaseOrders />} />
         <Route path="purchase-orders/new" element={<PurchaseOrderForm />} />
         <Route path="purchase-orders/:id" element={<PurchaseOrderDetail />} />
@@ -75,6 +80,7 @@ export default function App() {
         <Route path="receipts" element={<Receipts />} />
         <Route path="payments" element={<Payments />} />
         <Route path="journal-entries" element={<JournalEntries />} />
+        <Route path="gl-entries" element={<GlEntries />} />
         <Route path="trial-balance" element={<TrialBalance />} />
         <Route path="reports/sales" element={<SalesReport />} />
         <Route path="reports/purchases" element={<PurchaseReport />} />

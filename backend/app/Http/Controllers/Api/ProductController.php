@@ -12,7 +12,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with(['stockMovements' => fn ($q) => $q->select('product_id', 'qty')])
+        $products = Product::with(['stockMovements' => fn ($q) => $q->select('product_id', 'qty'), 'categoryRef', 'unitRef'])
             ->when($request->search, fn ($q, $s) => $q->where('name_th', 'like', "%{$s}%")
                 ->orWhere('code', 'like', "%{$s}%"))
             ->orderBy('code')
@@ -34,12 +34,16 @@ class ProductController extends Controller
 
         $product = Product::create($data);
 
+        $product->load('categoryRef', 'unitRef');
+
         return response()->json($product, 201);
     }
 
     public function show(Product $product)
     {
         $product->load('stockMovements.product');
+
+        $product->load('categoryRef', 'unitRef');
 
         return response()->json([
             'product' => $product,
@@ -52,6 +56,8 @@ class ProductController extends Controller
         $data = $this->validateData($request, $product->id);
 
         $product->update($data);
+
+        $product->load('categoryRef', 'unitRef');
 
         return response()->json($product);
     }
@@ -76,6 +82,8 @@ class ProductController extends Controller
             'name_en' => 'nullable|string',
             'category' => 'nullable|string',
             'unit' => 'nullable|string|max:50',
+            'category_id' => 'nullable|exists:categories,id',
+            'unit_id' => 'nullable|exists:units,id',
             'image' => 'nullable|string|max:2000000',
             'purchase_price' => 'nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',

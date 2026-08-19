@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
 use App\Models\Delivery;
 use App\Models\Invoice;
+use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Models\Payment;
 use App\Models\Product;
@@ -405,6 +406,99 @@ class ReportController extends Controller
                 } else {
                     $labels[$m->id] = $numbers[$m->ref_id] ?? '#'.$m->ref_id;
                 }
+            }
+        }
+
+        return $labels;
+    }
+
+    /**
+     * G/L Entry — รายการบัญชีรายบรรทัด (Debit/Credit) ตามเลขที่เอกสาร และรหัสบัญชี
+     */
+    public function glEntries(Request $request)
+    {
+        $data = $request->validate([
+            'account_id' => 'nullable|exists:chart_of_accounts,id',
+            'from' => 'nullable|date',
+            'to' => 'nullable|date',
+            'search' => 'nullable|string|max:100',
+            'doc_ref' => 'nullable|string|max:100',
+        ]);
+
+        $entries = JournalEntry::with(['lines.account', 'creator'])
+            ->when($data['from'] ?? null, fn ($q, $f) => $q->where('date', '>=', $f))
+            ->when($data['to'] ?? null, fn ($q, $t) => $q->where('date', '<=', $t))
+            ->when($data['search'] ?? null, fn ($q, $s) => $q->where(fn ($qq) => $qq->where('entry_number', 'like', "%{$s}%")->orWhere('description', 'like', "%{$s}%")))
+            ->when($data['account_id'] ?? null, fn ($q, $a) => $q->whereHas('lines', fn ($l) => $l->where('account_id', $a)))
+            ->orderBy('date')
+            ->orderBy('id')
+            ->get();
+
+        $refLabels = $this->resolveJournalRefLabels($entries);
+
+        // Filter by doc_ref if provided
+        if (! empty($data['doc_ref'])) {
+            $docRef = $data['doc_ref'];
+            $entries = $entries->filter(fn ($entry) => str_contains($refLabels[$entry->id] ?? '', $docRef));
+        }
+
+        $items = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
+
+        foreach ($entries as $entry) {
+            foreach ($entry->lines as $line) {
+                $items[] = [
+                    'entry_id' => $entry->id,
+                    'entry_number' => $entry->entry_number,
+                    'date' => $entry->date->toDateString(),
+                    'type' => $entry->type,
+                    'description' => $entry->description,
+                    'ref_label' => $refLabels[$entry->id] ?? null,
+                    'line_description' => $line->description,
+                    'account_code' => $line->account?->code,
+                    'account_name' => $line->account?->name_th,
+                    'debit' => round($line->debit, 2),
+                    'credit' => round($line->credit, 2),
+                ];
+                $totalDebit += $line->debit;
+                $totalCredit += $line->credit;
+            }
+        }
+
+        return response()->json([
+            'from' => $data['from'] ?? null,
+            'to' => $data['to'] ?? null,
+            'items' => $items,
+            'summary' => [
+                'count' => count($items),
+                'total_debit' => round($totalDebit, 2),
+                'total_credit' => round($totalCredit, 2),
+            ],
+        ]);
+    }
+
+    /**
+     * แปลง ref_type/ref_id ของรายการบัญชีเป็นเลขที่เอกสารต้นทาง (batch)
+     */
+    protected function resolveJournalRefLabels($entries): array
+    {
+        $labels = [];
+
+        foreach ($entries->groupBy('ref_type') as $refType => $rows) {
+            $ids = $rows->pluck('ref_id')->filter()->unique()->values();
+            $numbers = collect();
+
+            if ($refType === 'invoice' && $ids->isNotEmpty()) {
+                $numbers = Invoice::whereIn('id', $ids)->pluck('number', 'id');
+            } elseif ($refType === 'delivery' && $ids->isNotEmpty()) {
+                $numbers = Delivery::whereIn('id', $ids)->pluck('number', 'id');
+            } elseif ($refType === 'payment' && $ids->isNotEmpty()) {
+                $numbers = Payment::whereIn('id', $ids)->pluck('number', 'id');
+            }
+
+            foreach ($rows as $entry) {
+                $labels[$entry->id] = $numbers[$entry->ref_id] ?? null;
             }
         }
 

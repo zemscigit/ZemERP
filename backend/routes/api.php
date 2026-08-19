@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\StockMovementController;
 use App\Http\Controllers\Api\TaxRateController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WarehouseController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\UnitController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
@@ -33,6 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('chart-of-accounts/{chartOfAccount}', [ChartOfAccountController::class, 'update']);
     Route::delete('chart-of-accounts/{chartOfAccount}', [ChartOfAccountController::class, 'destroy']);
     Route::apiResource('warehouses', WarehouseController::class);
+    Route::apiResource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::apiResource('units', UnitController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::apiResource('tax-rates', TaxRateController::class);
     Route::apiResource('users', UserController::class)->except(['show'])->middleware('admin');
 
@@ -75,6 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('reports/stock-movements', [ReportController::class, 'stockMovements']);
     Route::get('reports/stock-card', [ReportController::class, 'stockCard']);
     Route::get('reports/wht', [ReportController::class, 'wht']);
+    Route::get('reports/gl-entries', [ReportController::class, 'glEntries']);
     Route::get('reports/trial-balance', [ReportController::class, 'trialBalance']);
     Route::get('reports/ledger', [ReportController::class, 'ledger']);
 

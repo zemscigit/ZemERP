@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     protected $fillable = [
-        'code', 'barcode', 'name_th', 'name_en', 'category', 'unit', 'image', 'purchase_price', 'sale_price', 'is_active',
+        'code', 'barcode', 'name_th', 'name_en', 'category', 'unit', 'category_id', 'unit_id', 'image', 'purchase_price', 'sale_price', 'is_active',
     ];
 
     protected $casts = [
@@ -15,6 +15,16 @@ class Product extends Model
         'sale_price' => 'float',
         'is_active' => 'boolean',
     ];
+
+    public function categoryRef()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function unitRef()
+    {
+        return $this->belongsTo(Unit::class, 'unit_id');
+    }
 
     public function stockMovements()
     {
