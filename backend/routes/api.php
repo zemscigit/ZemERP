@@ -38,7 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categories', CategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::apiResource('units', UnitController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::apiResource('tax-rates', TaxRateController::class);
-    Route::apiResource('users', UserController::class)->except(['show'])->middleware('admin');
+    Route::apiResource('users', UserController::class)->middleware('admin');
+    Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword']);
 
     // ซื้อ
     Route::apiResource('purchase-orders', PurchaseOrderController::class);

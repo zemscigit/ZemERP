@@ -9,9 +9,16 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(User::orderBy('name')->get(['id', 'name', 'email', 'role', 'locale']));
+        $users = User::query()
+            ->when($request->search, fn ($q, $s) => $q->where('name', 'like', "%{$s}%")
+                ->orWhere('email', 'like', "%{$s}%")
+                ->orWhere('phone', 'like', "%{$s}%"))
+            ->orderBy('name')
+            ->get(['id', 'name', 'email', 'phone', 'role', 'locale', 'is_active']);
+
+        return response()->json($users);
     }
 
     public function store(Request $request)
@@ -19,14 +26,17 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:20',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,staff',
             'locale' => 'nullable|in:th,en',
+            'is_active' => 'nullable|boolean',
         ]);
 
+        $data['is_active'] = $data['is_active'] ?? true;
         $user = User::create($data);
 
-        return response()->json($user->only(['id', 'name', 'email', 'role', 'locale']), 201);
+        return response()->json($user->only(['id', 'name', 'email', 'phone', 'role', 'locale', 'is_active']), 201);
     }
 
     public function update(Request $request, User $user)
@@ -34,9 +44,11 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone' => 'nullable|string|max:20',
             'password' => 'nullable|string|min:6',
             'role' => 'required|in:admin,staff',
             'locale' => 'nullable|in:th,en',
+            'is_active' => 'nullable|boolean',
         ]);
 
         if (empty($data['password'])) {
@@ -45,7 +57,23 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return response()->json($user->only(['id', 'name', 'email', 'role', 'locale']));
+        return response()->json($user->only(['id', 'name', 'email', 'phone', 'role', 'locale', 'is_active']));
+    }
+
+    public function show(User $user)
+    {
+        return response()->json($user->only(['id', 'name', 'email', 'phone', 'role', 'locale', 'is_active', 'created_at']));
+    }
+
+    public function resetPassword(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user->update(['password' => $data['password']]);
+
+        return response()->json(['message' => 'Password updated']);
     }
 
     public function destroy(User $user)
