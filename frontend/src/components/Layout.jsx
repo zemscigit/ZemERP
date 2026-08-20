@@ -192,12 +192,27 @@ function MenuItemGroup({ item, collapsed, onNavigate, groupIndex = null, openInd
 function CollapsedGroup({ item, onNavigate, index, openIndex, setOpenIndex }) {
   const open = openIndex === index
   const [pos, setPos] = useState({ top: 0, left: 0 })
-  const ref = useCallback((el) => {
-    if (el) {
-      const r = el.getBoundingClientRect()
+  const btnRef = useRef(null)
+
+  const calcPos = () => {
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect()
       setPos({ top: r.top, left: r.right + 4 })
     }
-  }, [])
+  }
+
+  /* recalculate position every time the submenu opens */
+  useEffect(() => {
+    if (open) calcPos()
+  }, [open])
+
+  /* keep position in sync if window resizes (e.g. sidebar collapse animation) */
+  useEffect(() => {
+    if (!open) return
+    const recalc = () => calcPos()
+    window.addEventListener('resize', recalc)
+    return () => window.removeEventListener('resize', recalc)
+  }, [open])
 
   useEffect(() => {
     if (!open) return
@@ -219,9 +234,10 @@ function CollapsedGroup({ item, onNavigate, index, openIndex, setOpenIndex }) {
   }
 
   return (
-    <span ref={ref} className="relative">
+    <span className="relative">
       <Tip text={item.label}>
         <button
+          ref={btnRef}
           onClick={toggle}
           className="w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
         >
