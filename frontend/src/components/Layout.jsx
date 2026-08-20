@@ -34,6 +34,7 @@ const menu = (t) => [
     label: t('sales'),
     icon: '💼',
     children: [
+      { to: '/pos', label: '🛒 POS (ขายหน้าร้าน)' },
       { to: '/sales-orders', label: t('sales_orders') },
       { to: '/deliveries', label: t('deliveries') },
       { to: '/invoices?type=sale', label: t('sales_invoices'), query: { type: 'sale' } },

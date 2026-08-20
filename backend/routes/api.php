@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PurchaseOrderController;
 use App\Http\Controllers\Api\ReceiptController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SalesOrderController;
+use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\StockMovementController;
 use App\Http\Controllers\Api\TaxRateController;
@@ -84,6 +85,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('reports/gl-entries', [ReportController::class, 'glEntries']);
     Route::get('reports/trial-balance', [ReportController::class, 'trialBalance']);
     Route::get('reports/ledger', [ReportController::class, 'ledger']);
+
+    // POS
+    Route::post('pos/checkout', [PosController::class, 'checkout']);
+    Route::get('pos/products', [PosController::class, 'products']);
 
     // ตั้งค่า
     Route::get('settings', [SettingController::class, 'show']);

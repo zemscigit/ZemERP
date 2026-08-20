@@ -217,6 +217,12 @@ const translations = {
     change_avatar: 'เปลี่ยนรูปโปรไฟล์',
     profile_updated: 'บันทึกข้อมูลสำเร็จ',
     wrong_password: 'รหัสผ่านปัจจุบันไม่ถูกต้อง',
+    pos: 'ขายหน้าร้าน',
+    checkout: 'ชำระเงิน',
+    cart: 'ตะกร้า',
+    qty: 'จำนวน',
+    change: 'เงินทอน',
+    payment_method: 'ช่องทางการชำระ',
   },
   en: {
     app_name: 'ZemERP',
@@ -434,6 +440,12 @@ const translations = {
     change_avatar: 'Change Avatar',
     profile_updated: 'Profile updated successfully',
     wrong_password: 'Current password is incorrect',
+    pos: 'Point of Sale',
+    checkout: 'Checkout',
+    cart: 'Cart',
+    qty: 'Qty',
+    change: 'Change',
+    payment_method: 'Payment Method',
   },
 }
 

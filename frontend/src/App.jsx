@@ -22,6 +22,7 @@ import DeliveryDetail from './pages/sales/DeliveryDetail.jsx'
 import Invoices from './pages/sales/Invoices.jsx'
 import InvoiceDetail from './pages/sales/InvoiceDetail.jsx'
 import Receipts from './pages/sales/Receipts.jsx'
+import PosPage from './pages/sales/PosPage.jsx'
 import Payments from './pages/money/Payments.jsx'
 import JournalEntries from './pages/accounting/JournalEntries.jsx'
 import GlEntries from './pages/accounting/GlEntries.jsx'
@@ -78,6 +79,7 @@ export default function App() {
         <Route path="deliveries/:id/edit" element={<DeliveryForm />} />
         <Route path="invoices" element={<Invoices />} />
         <Route path="invoices/:id" element={<InvoiceDetail />} />
+        <Route path="pos" element={<PosPage />} />
         <Route path="receipts" element={<Receipts />} />
         <Route path="payments" element={<Payments />} />
         <Route path="journal-entries" element={<JournalEntries />} />
