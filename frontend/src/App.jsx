@@ -35,6 +35,7 @@ import StockCardReport from './pages/reports/StockCardReport.jsx'
 import WhtReport from './pages/reports/WhtReport.jsx'
 import SettingsPage from './pages/settings/SettingsPage.jsx'
 import Users from './pages/settings/Users.jsx'
+import Profile from './pages/settings/Profile.jsx'
 import PrintDocument from './pages/print/PrintDocument.jsx'
 
 function Protected({ children }) {
@@ -91,6 +92,7 @@ export default function App() {
         <Route path="reports/wht" element={<WhtReport />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="users" element={<Users />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
       <Route path="/print/:type/:id" element={<PrintDocument />} />
       <Route path="*" element={<Navigate to="/" replace />} />

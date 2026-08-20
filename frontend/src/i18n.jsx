@@ -211,6 +211,12 @@ const translations = {
     change_password: 'เปลี่ยนรหัสผ่าน',
     new_password: 'รหัสผ่านใหม่',
     password_min: 'อย่างน้อย 6 ตัวอักษร',
+    profile: 'ข้อมูลส่วนตัว',
+    edit_profile: 'แก้ไขข้อมูลส่วนตัว',
+    current_password: 'รหัสผ่านปัจจุบัน',
+    change_avatar: 'เปลี่ยนรูปโปรไฟล์',
+    profile_updated: 'บันทึกข้อมูลสำเร็จ',
+    wrong_password: 'รหัสผ่านปัจจุบันไม่ถูกต้อง',
   },
   en: {
     app_name: 'ZemERP',
@@ -422,6 +428,12 @@ const translations = {
     change_password: 'Change Password',
     new_password: 'New Password',
     password_min: 'At least 6 characters',
+    profile: 'Profile',
+    edit_profile: 'Edit Profile',
+    current_password: 'Current Password',
+    change_avatar: 'Change Avatar',
+    profile_updated: 'Profile updated successfully',
+    wrong_password: 'Current password is incorrect',
   },
 }
 

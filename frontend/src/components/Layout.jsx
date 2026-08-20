@@ -413,12 +413,20 @@ export default function Layout() {
               onChange={(e) => setLocale(e.target.value)}
               className="w-36"
             />
-            <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-200">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
+            <button
+              onClick={() => navigate('/profile')}
+              className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-200 hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors"
+              title={t('edit_profile')}
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold">
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+              )}
               <span className="text-sm text-gray-600 font-medium">{user?.name}</span>
-            </div>
+            </button>
             <button
               onClick={handleLogout}
               className="text-sm text-gray-400 hover:text-red-600 font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
