@@ -30,7 +30,7 @@ export default function ItemLines({ items, onChange, products = [], unitPrices =
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-200 text-left text-gray-500">
+            <tr className="border-b border-gray-200 dark:border-gray-700 text-left text-gray-500 dark:text-gray-400">
               <th className="px-2 py-2 font-medium w-8">#</th>
               <th className="px-2 py-2 font-medium min-w-56">{t('product')}</th>
               <th className="px-2 py-2 font-medium w-24">{t('qty')}</th>
@@ -41,8 +41,8 @@ export default function ItemLines({ items, onChange, products = [], unitPrices =
           </thead>
           <tbody>
             {items.map((it, idx) => (
-              <tr key={idx} className="border-b border-gray-100">
-                <td className="px-2 py-1.5 text-gray-400">{idx + 1}</td>
+              <tr key={idx} className="border-b border-gray-100 dark:border-gray-700/50">
+                <td className="px-2 py-1.5 text-gray-400 dark:text-gray-500">{idx + 1}</td>
                 <td className="px-2 py-1.5">
                   <Select
                     options={productOptions}
@@ -64,9 +64,9 @@ export default function ItemLines({ items, onChange, products = [], unitPrices =
                 <td className="px-2 py-1.5">
                   <Input type="number" min="0" step="any" value={it.unit_price} onChange={(e) => update(idx, { unit_price: e.target.value })} />
                 </td>
-                <td className="px-2 py-1.5 text-right tabular-nums"><Money value={it.amount} /></td>
+                <td className="px-2 py-1.5 text-right tabular-nums text-gray-800 dark:text-gray-200"><Money value={it.amount} /></td>
                 <td className="px-2 py-1.5">
-                  <button onClick={() => removeRow(idx)} className="text-red-500 hover:text-red-700 text-lg leading-none">×</button>
+                  <button onClick={() => removeRow(idx)} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-lg leading-none">×</button>
                 </td>
               </tr>
             ))}

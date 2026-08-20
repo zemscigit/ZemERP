@@ -113,7 +113,7 @@ export default function JournalEntries() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-gray-500">
+              <tr className="border-b border-gray-200 dark:border-gray-700 text-left text-gray-500 dark:text-gray-400">
                 <th className="px-2 py-2 font-medium">{t('account')}</th>
                 <th className="px-2 py-2 font-medium w-48">{t('description')}</th>
                 <th className="px-2 py-2 font-medium w-32 text-right">{t('debit')}</th>
@@ -123,7 +123,7 @@ export default function JournalEntries() {
             </thead>
             <tbody>
               {form.lines.map((line, idx) => (
-                <tr key={idx} className="border-b border-gray-100">
+                <tr key={idx} className="border-b border-gray-100 dark:border-gray-700/50">
                   <td className="px-2 py-1.5 min-w-64">
                     <Select options={accountOptions} value={line.account_id} onChange={(e) => {
                       const next = [...form.lines]
@@ -153,14 +153,14 @@ export default function JournalEntries() {
                     }} />
                   </td>
                   <td className="px-2 py-1.5">
-                    <button onClick={() => setForm({ ...form, lines: form.lines.filter((_, i) => i !== idx) })} className="text-red-500 text-lg leading-none">×</button>
+                    <button onClick={() => setForm({ ...form, lines: form.lines.filter((_, i) => i !== idx) })} className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-lg leading-none">×</button>
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
               <tr className="font-semibold">
-                <td colSpan="2" className="px-2 py-2">{t('total')}</td>
+                <td colSpan="2" className="px-2 py-2 text-gray-800 dark:text-gray-200">{t('total')}</td>
                 <td className="px-2 py-2 text-right tabular-nums"><Money value={totalDebit} /></td>
                 <td className="px-2 py-2 text-right tabular-nums"><Money value={totalCredit} /></td>
                 <td />
