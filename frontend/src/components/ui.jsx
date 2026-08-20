@@ -258,7 +258,7 @@ export function Table({ columns, data, onRowClick, empty }) {
             <tr
               key={row.id ?? i}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
-              className={`border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${onRowClick ? 'cursor-pointer' : ''}`}
+              className={`border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-800 dark:text-gray-200 ${onRowClick ? 'cursor-pointer' : ''}`}
             >
               {columns.map((c) => (
                 <td key={c.key} className={`px-3 py-2.5 whitespace-nowrap ${c.align === 'right' ? 'text-right' : ''}`}>
