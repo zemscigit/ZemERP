@@ -100,9 +100,9 @@ export default function PurchaseOrderDetail() {
               </thead>
               <tbody>
                 {doc.items.map((it, i) => (
-                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50">
-                    <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{it.product?.name_th}</td>
+                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50 text-gray-800 dark:text-gray-200">
+                    <td className="px-3 py-2">{i + 1}</td>
+                    <td className="px-3 py-2 font-medium">{it.product?.name_th}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{it.qty}</td>
                     <td className="px-3 py-2 text-right tabular-nums"><Money value={it.unit_price} /></td>
                     <td className="px-3 py-2 text-right tabular-nums"><Money value={it.amount} /></td>

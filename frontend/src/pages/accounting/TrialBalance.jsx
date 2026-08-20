@@ -34,7 +34,7 @@ export default function TrialBalance() {
   const columns = [
     { key: 'code', label: t('account_code'), render: (r) => <span className="font-mono">{r.code}</span> },
     { key: 'name_th', label: t('account_name'), render: (r) => (
-      <button onClick={() => openLedger(r)} className="text-blue-600 hover:underline text-left">{r.name_th}</button>
+      <button onClick={() => openLedger(r)} className="text-blue-600 dark:text-blue-400 hover:underline text-left">{r.name_th}</button>
     ) },
     { key: 'type', label: t('type'), render: (r) => <Badge color={typeColors[r.type]}>{r.type}</Badge> },
     { key: 'debit', label: t('debit'), align: 'right', render: (r) => <Money value={r.debit} /> },

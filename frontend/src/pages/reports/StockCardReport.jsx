@@ -71,14 +71,14 @@ export default function StockCardReport() {
         <>
           <Card className="mb-6">
             <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
-              <span className="font-semibold text-gray-800">{data.product.code} - {data.product.name}</span>
-              <span className="text-sm text-gray-500">{t('unit')}: {data.product.unit}</span>
-              <span className="text-sm text-gray-500">{t('date')}: {fmtDate(from)} - {fmtDate(to)}</span>
+              <span className="font-semibold text-gray-800 dark:text-gray-100">{data.product.code} - {data.product.name}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('unit')}: {data.product.unit}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t('date')}: {fmtDate(from)} - {fmtDate(to)}</span>
             </div>
           </Card>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <StatCard label={t('opening_balance')} value={data.opening} color="text-gray-700" />
+            <StatCard label={t('opening_balance')} value={data.opening} color="text-gray-700 dark:text-gray-300" />
             <StatCard label={t('in_qty')} value={data.total_in} color="text-green-600" />
             <StatCard label={t('out_qty')} value={data.total_out} color="text-red-600" />
             <StatCard label={t('closing_balance')} value={data.closing} color="text-blue-600" />

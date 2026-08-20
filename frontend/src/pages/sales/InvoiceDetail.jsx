@@ -108,9 +108,9 @@ export default function InvoiceDetail() {
               </thead>
               <tbody>
                 {doc.items.map((it, i) => (
-                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50">
-                    <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{it.product ? it.product.name_th : it.description}</td>
+                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50 text-gray-800 dark:text-gray-200">
+                    <td className="px-3 py-2">{i + 1}</td>
+                    <td className="px-3 py-2 font-medium">{it.product ? it.product.name_th : it.description}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{it.qty}</td>
                     <td className="px-3 py-2 text-right tabular-nums"><Money value={it.unit_price} /></td>
                     <td className="px-3 py-2 text-right tabular-nums"><Money value={it.amount} /></td>
@@ -144,11 +144,11 @@ export default function InvoiceDetail() {
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">{t('vat')} ({doc.vat_rate}%)</span><Money value={doc.vat_amount} /></div>
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">{t('total')}</span><Money value={doc.total} /></div>
               {doc.wht_amount > 0 && (
-                <div className="flex justify-between text-red-600"><span>{t('wht')} ({doc.wht_rate}%)</span><Money value={doc.wht_amount} /></div>
+                <div className="flex justify-between text-red-600 dark:text-red-400"><span>{t('wht')} ({doc.wht_rate}%)</span><Money value={doc.wht_amount} /></div>
               )}
               <div className="flex justify-between font-bold border-t border-gray-200 dark:border-gray-700 pt-2"><span className="text-gray-800 dark:text-gray-100">{t('net_payable')}</span><Money value={doc.net_payable} /></div>
               <div className="flex justify-between"><span className="text-gray-500 dark:text-gray-400">{t('paid_amount')}</span><Money value={doc.paid_amount} /></div>
-              <div className="flex justify-between font-semibold text-green-600"><span>{t('balance')}</span><Money value={balance} /></div>
+              <div className="flex justify-between font-semibold text-green-600 dark:text-green-400"><span>{t('balance')}</span><Money value={balance} /></div>
             </div>
           </Card>
           {doc.note && <Card title={t('note')}><p className="text-sm text-gray-600 dark:text-gray-400">{doc.note}</p></Card>}

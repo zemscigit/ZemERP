@@ -85,13 +85,13 @@ export default function SalesOrderForm() {
 
         <div className="mt-6 flex flex-col items-end gap-2">
           <div className="w-72 space-y-2">
-            <div className="flex justify-between text-sm"><span className="text-gray-500">{t('subtotal')}</span><Money value={subtotal} /></div>
+            <div className="flex justify-between text-sm"><span className="text-gray-500 dark:text-gray-400">{t('subtotal')}</span><Money value={subtotal} /></div>
             <div className="flex justify-between text-sm items-center">
-              <span className="text-gray-500">{t('discount')}</span>
+              <span className="text-gray-500 dark:text-gray-400">{t('discount')}</span>
               <Input type="number" min="0" step="any" value={form.discount_amount} onChange={(e) => setForm({ ...form, discount_amount: e.target.value })} className="w-32 text-right" />
             </div>
-            <div className="flex justify-between text-sm"><span className="text-gray-500">{t('vat')} ({vatRate}%)</span><Money value={vat} /></div>
-            <div className="flex justify-between text-sm font-bold border-t border-gray-200 pt-2"><span>{t('total')}</span><Money value={total} /></div>
+            <div className="flex justify-between text-sm"><span className="text-gray-500 dark:text-gray-400">{t('vat')} ({vatRate}%)</span><Money value={vat} /></div>
+            <div className="flex justify-between text-sm font-bold border-t border-gray-200 dark:border-gray-700 pt-2"><span className="text-gray-800 dark:text-gray-100">{t('total')}</span><Money value={total} /></div>
           </div>
         </div>
 

@@ -22,7 +22,7 @@ export default function Receipts() {
   const columns = [
     {
       key: 'number', label: t('number'),
-      render: (r) => <button onClick={() => window.open(`/print/receipt/${r.id}`, '_blank')} className="text-blue-600 hover:underline">{r.number}</button>,
+      render: (r) => <button onClick={() => window.open(`/print/receipt/${r.id}`, '_blank')} className="text-blue-600 dark:text-blue-400 hover:underline">{r.number}</button>,
     },
     { key: 'date', label: t('date'), render: (r) => fmtDate(r.date) },
     { key: 'partner', label: t('customer'), render: (r) => r.partner?.name },

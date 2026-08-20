@@ -60,7 +60,7 @@ export default function GlEntries() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label={t('items')} value={data.summary.count} color="text-gray-700" />
+        <StatCard label={t('items')} value={data.summary.count} color="text-gray-700 dark:text-gray-300" />
         <StatCard label={t('debit')} value={<Money value={data.summary.total_debit} />} color="text-blue-600" />
         <StatCard label={t('credit')} value={<Money value={data.summary.total_credit} />} color="text-orange-600" />
         <StatCard

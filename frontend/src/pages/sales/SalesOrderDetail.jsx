@@ -98,9 +98,9 @@ export default function SalesOrderDetail() {
             {doc.warehouse && <div><p className="text-gray-500 dark:text-gray-400">{t('warehouse')}</p><p className="text-gray-700 dark:text-gray-300">{doc.warehouse.name}</p></div>}
             {doc.deliveries?.length > 0 && (
               <div>
-                <p className="text-gray-500">{t('deliveries')}</p>
+                <p className="text-gray-500 dark:text-gray-400">{t('deliveries')}</p>
                 {doc.deliveries.map((d) => (
-                  <button key={d.id} onClick={() => navigate(`/deliveries/${d.id}`)} className="text-blue-600 hover:underline block">{d.number}</button>
+                  <button key={d.id} onClick={() => navigate(`/deliveries/${d.id}`)} className="text-blue-600 dark:text-blue-400 hover:underline block">{d.number}</button>
                 ))}
               </div>
             )}
@@ -118,9 +118,9 @@ export default function SalesOrderDetail() {
               </thead>
               <tbody>
                 {doc.items.map((it, i) => (
-                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50">
-                    <td className="px-3 py-2 text-gray-700 dark:text-gray-300">{i + 1}</td>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{it.product?.name_th}</td>
+                  <tr key={i} className="border-b border-gray-100 dark:border-gray-700/50 text-gray-800 dark:text-gray-200">
+                    <td className="px-3 py-2">{i + 1}</td>
+                    <td className="px-3 py-2 font-medium">{it.product?.name_th}</td>
                     <td className="px-3 py-2 text-right tabular-nums">{it.qty}</td>
                     <td className="px-3 py-2 text-right tabular-nums"><Money value={it.unit_price} /></td>
                     <td className="px-3 py-2 text-right tabular-nums"><Money value={it.amount} /></td>

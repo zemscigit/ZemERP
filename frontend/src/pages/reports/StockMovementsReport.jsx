@@ -68,7 +68,7 @@ export default function StockMovementsReport() {
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard label={t('items')} value={data.summary.count} color="text-gray-700" />
+        <StatCard label={t('items')} value={data.summary.count} color="text-gray-700 dark:text-gray-300" />
         <StatCard label={t('in_qty')} value={data.summary.total_in} color="text-green-600" />
         <StatCard label={t('out_qty')} value={data.summary.total_out} color="text-red-600" />
         <StatCard label={t('total_value')} value={<Money value={data.summary.total_value} />} color="text-blue-600" />

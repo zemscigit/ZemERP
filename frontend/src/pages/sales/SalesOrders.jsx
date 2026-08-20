@@ -28,7 +28,7 @@ export default function SalesOrders() {
   }, [status, search])
 
   const columns = [
-    { key: 'number', label: t('number'), render: (r) => <Link to={`/sales-orders/${r.id}`} className="text-blue-600 hover:underline">{r.number}</Link> },
+    { key: 'number', label: t('number'), render: (r) => <Link to={`/sales-orders/${r.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">{r.number}</Link> },
     { key: 'date', label: t('date'), render: (r) => fmtDate(r.date) },
     { key: 'partner', label: t('customer'), render: (r) => r.partner?.name },
     { key: 'total', label: t('total'), align: 'right', render: (r) => <Money value={r.total} /> },
