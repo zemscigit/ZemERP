@@ -133,7 +133,7 @@ class PosController extends Controller
             ]);
 
             // ── 9. Reload and return ──
-            $invoice->load(['partner', 'items.product']);
+            $invoice->load(['partner', 'items.product', 'creator']);
 
             return response()->json([
                 'message' => 'POS checkout สำเร็จ',

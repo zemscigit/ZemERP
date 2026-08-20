@@ -127,7 +127,8 @@ export default function PosPage() {
               </p>
             )}
           </div>
-          <div className="flex gap-3 justify-center">
+          <div className="flex gap-3 justify-center flex-wrap">
+            <Button onClick={() => window.open(`/print/pos-receipt/${result.invoice.id}`, '_blank')}>🖨 พิมพ์ใบเสร็จ</Button>
             <Button onClick={newSale} className="px-8">ขายใหม่</Button>
             <Button variant="secondary" onClick={() => navigate(`/invoices/${result.invoice.id}`)}>ดูใบแจ้งหนี้</Button>
           </div>
