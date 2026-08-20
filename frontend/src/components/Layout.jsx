@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 import { useLocale } from '../i18n'
 import { Select } from './ui'
 
@@ -134,13 +135,11 @@ function MenuItemSingle({ item, collapsed, onNavigate }) {
 function MenuItemGroup({ item, collapsed, onNavigate }) {
   const [expanded, setExpanded] = useState(true)
 
-  /* เมื่อ sidebar หุบ ให้ปิด group อัตโนมัติ */
   useEffect(() => {
     if (collapsed) setExpanded(false)
   }, [collapsed])
 
   if (collapsed) {
-    /* ตอนหุบ: แสดงแค่ icon + tooltip → เมื่อคลิก会展开 floating submenu */
     return (
       <CollapsedGroup item={item} onNavigate={onNavigate} />
     )
@@ -192,7 +191,6 @@ function MenuItemGroup({ item, collapsed, onNavigate }) {
 function CollapsedGroup({ item, onNavigate }) {
   const [open, setOpen] = useState(false)
   const [pos, setPos] = useState({ top: 0, left: 0 })
-  const justOpened = useRef(false)
   const ref = useCallback((el) => {
     if (el) {
       const r = el.getBoundingClientRect()
@@ -203,7 +201,6 @@ function CollapsedGroup({ item, onNavigate }) {
   useEffect(() => {
     if (!open) return
     const close = () => setOpen(false)
-    // Use setTimeout เพื่อไม่ให้ close handler ทำงานจาก event เดียวกับ toggle
     const timer = setTimeout(() => {
       document.addEventListener('click', close)
       document.addEventListener('scroll', close, true)
@@ -227,7 +224,7 @@ function CollapsedGroup({ item, onNavigate }) {
       </Tip>
       {open && (
         <div
-          className="fixed z-[100] w-52 py-1.5 bg-gray-900 border border-gray-700/60 rounded-xl shadow-2xl shadow-black/40"
+          className="fixed z-[100] w-52 py-1.5 bg-gray-900 dark:bg-gray-800 border border-gray-700/60 rounded-xl shadow-2xl shadow-black/40"
           style={{ top: pos.top, left: pos.left }}
         >
           <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-700/40 mb-1">
@@ -255,12 +252,35 @@ function CollapsedGroup({ item, onNavigate }) {
   )
 }
 
+/* ── Theme Toggle Button ── */
+function ThemeToggle() {
+  const { dark, toggle } = useTheme()
+  return (
+    <button
+      onClick={toggle}
+      className="p-2 rounded-lg text-gray-400 hover:text-yellow-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      title={dark ? 'Light Mode' : 'Dark Mode'}
+    >
+      {dark ? (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      ) : (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
 /* ── Main Layout ── */
 export default function Layout() {
   const { user, logout } = useAuth()
   const { t, locale, setLocale } = useLocale()
+  const { dark } = useTheme()
   const navigate = useNavigate()
-  const [sidebarOpen, setSidebarOpen] = useState(false)          /* mobile overlay */
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem(COLLAPSED_KEY) === 'true' } catch { return false }
   })
@@ -283,7 +303,7 @@ export default function Layout() {
   const SIDEBAR_W = collapsed ? 'w-[72px]' : 'w-64'
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* ─── Desktop Sidebar ─── */}
       <aside
         className={`
@@ -333,15 +353,22 @@ export default function Layout() {
         {/* Footer */}
         {!collapsed && (
           <div className="px-3 py-3 border-t border-gray-800/60 shrink-0">
-            <div className="flex items-center gap-2.5 px-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold shrink-0">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
-              <div className="min-w-0 flex-1">
+            <button
+              onClick={() => navigate('/profile')}
+              className="flex items-center gap-2.5 px-2 w-full hover:bg-white/5 rounded-lg py-1 transition-colors"
+            >
+              {user?.avatar ? (
+                <img src={user.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+              )}
+              <div className="min-w-0 flex-1 text-left">
                 <p className="text-sm font-medium text-gray-200 truncate">{user?.name}</p>
                 <p className="text-[10px] text-gray-500 truncate">{user?.email}</p>
               </div>
-            </div>
+            </button>
           </div>
         )}
       </aside>
@@ -384,10 +411,10 @@ export default function Layout() {
       {/* ─── Main Content ─── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-16 bg-white border-b border-gray-200 px-5 flex items-center justify-between shrink-0 no-print">
+        <header className="h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-5 flex items-center justify-between shrink-0 no-print transition-colors">
           {/* Mobile hamburger */}
           <button
-            className="lg:hidden p-2 -ml-2 rounded-lg text-gray-500 hover:bg-gray-100"
+            className="lg:hidden p-2 -ml-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
             onClick={() => setSidebarOpen(true)}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -395,9 +422,9 @@ export default function Layout() {
             </svg>
           </button>
 
-          {/* Desktop collapse button (visible on lg+) — duplicate of sidebar toggle for easy access */}
+          {/* Desktop collapse button */}
           <button
-            className="hidden lg:flex p-2 -ml-2 rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="hidden lg:flex p-2 -ml-2 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
             onClick={toggleCollapse}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
@@ -406,7 +433,8 @@ export default function Layout() {
             </svg>
           </button>
 
-          <div className="flex items-center gap-3 ml-auto">
+          <div className="flex items-center gap-2 ml-auto">
+            <ThemeToggle />
             <Select
               options={[{ value: 'th', label: '🇹🇭 ไทย' }, { value: 'en', label: '🌐 English' }]}
               value={locale}
@@ -415,7 +443,7 @@ export default function Layout() {
             />
             <button
               onClick={() => navigate('/profile')}
-              className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-200 hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors"
+              className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg px-2 py-1 transition-colors"
               title={t('edit_profile')}
             >
               {user?.avatar ? (
@@ -425,11 +453,11 @@ export default function Layout() {
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
               )}
-              <span className="text-sm text-gray-600 font-medium">{user?.name}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300 font-medium">{user?.name}</span>
             </button>
             <button
               onClick={handleLogout}
-              className="text-sm text-gray-400 hover:text-red-600 font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50"
+              className="text-sm text-gray-400 hover:text-red-600 dark:hover:text-red-400 font-medium transition-colors px-3 py-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
             >
               {t('logout')}
             </button>

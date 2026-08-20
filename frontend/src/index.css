@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 body {
   font-family: "Sarabun", "IBM Plex Sans Thai", "Tahoma", system-ui, sans-serif;
   background-color: #f3f4f6;
+}
+
+.dark body,
+.dark {
+  background-color: #111827;
 }
 
 /* Print styles สำหรับเอกสาร */
