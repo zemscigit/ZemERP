@@ -308,7 +308,7 @@ export function StatCard({ label, value, color = 'text-gray-800', icon }) {
 
 export function Money({ value, className = '' }) {
   const { locale } = useLocale()
-  return <span className={`tabular-nums ${className}`}>{fmtMoney(value, locale)}</span>
+  return <span className={`tabular-nums text-gray-800 dark:text-gray-200 ${className}`}>{fmtMoney(value, locale)}</span>
 }
 
 export function Spinner() {
