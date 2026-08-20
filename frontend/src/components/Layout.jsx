@@ -133,7 +133,7 @@ function MenuItemSingle({ item, collapsed, onNavigate }) {
   return collapsed ? <Tip text={item.label}>{inner}</Tip> : inner
 }
 
-function MenuItemGroup({ item, collapsed, onNavigate }) {
+function MenuItemGroup({ item, collapsed, onNavigate, groupIndex = null, openIndex = null, setOpenIndex = () => {} }) {
   const [expanded, setExpanded] = useState(true)
 
   useEffect(() => {
@@ -142,7 +142,7 @@ function MenuItemGroup({ item, collapsed, onNavigate }) {
 
   if (collapsed) {
     return (
-      <CollapsedGroup item={item} onNavigate={onNavigate} />
+      <CollapsedGroup item={item} onNavigate={onNavigate} index={groupIndex} openIndex={openIndex} setOpenIndex={setOpenIndex} />
     )
   }
 
@@ -189,8 +189,8 @@ function MenuItemGroup({ item, collapsed, onNavigate }) {
 }
 
 /* ── Collapsed floating submenu ── */
-function CollapsedGroup({ item, onNavigate }) {
-  const [open, setOpen] = useState(false)
+function CollapsedGroup({ item, onNavigate, index, openIndex, setOpenIndex }) {
+  const open = openIndex === index
   const [pos, setPos] = useState({ top: 0, left: 0 })
   const ref = useCallback((el) => {
     if (el) {
@@ -201,7 +201,7 @@ function CollapsedGroup({ item, onNavigate }) {
 
   useEffect(() => {
     if (!open) return
-    const close = () => setOpen(false)
+    const close = () => setOpenIndex(null)
     const timer = setTimeout(() => {
       document.addEventListener('click', close)
       document.addEventListener('scroll', close, true)
@@ -211,13 +211,18 @@ function CollapsedGroup({ item, onNavigate }) {
       document.removeEventListener('click', close)
       document.removeEventListener('scroll', close, true)
     }
-  }, [open])
+  }, [open, setOpenIndex])
+
+  const toggle = (e) => {
+    e.stopPropagation()
+    setOpenIndex(open ? null : index)
+  }
 
   return (
     <span ref={ref} className="relative">
       <Tip text={item.label}>
         <button
-          onClick={(e) => { e.stopPropagation(); setOpen(true); }}
+          onClick={toggle}
           className="w-full flex items-center justify-center px-2 py-2.5 rounded-xl text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
         >
           <span className="text-lg">{item.icon}</span>
@@ -235,7 +240,7 @@ function CollapsedGroup({ item, onNavigate }) {
             <NavLink
               key={c.label}
               to={c.to}
-              onClick={(e) => { e.stopPropagation(); onNavigate?.(); setOpen(false) }}
+              onClick={(e) => { e.stopPropagation(); onNavigate?.(); setOpenIndex(null) }}
               className={({ isActive }) =>
                 `block px-3 py-2 text-sm transition-colors rounded-lg mx-1.5 ${
                   isActive
@@ -285,6 +290,7 @@ export default function Layout() {
   const [collapsed, setCollapsed] = useState(() => {
     try { return localStorage.getItem(COLLAPSED_KEY) === 'true' } catch { return false }
   })
+  const [openIndex, setOpenIndex] = useState(null)
 
   const toggleCollapse = () => {
     setCollapsed((prev) => {
@@ -292,6 +298,7 @@ export default function Layout() {
       try { localStorage.setItem(COLLAPSED_KEY, next) } catch {}
       return next
     })
+    setOpenIndex(null)
   }
 
   const handleLogout = async () => {
@@ -344,7 +351,7 @@ export default function Layout() {
         <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 space-y-1 scrollbar-thin scrollbar-thumb-gray-800">
           {menu(t).map((item, i) =>
             item.children ? (
-              <MenuItemGroup key={i} item={item} collapsed={collapsed} onNavigate={onNavigate} />
+              <MenuItemGroup key={i} item={item} collapsed={collapsed} onNavigate={onNavigate} groupIndex={i} openIndex={openIndex} setOpenIndex={setOpenIndex} />
             ) : (
               <MenuItemSingle key={i} item={item} collapsed={collapsed} onNavigate={onNavigate} />
             )
