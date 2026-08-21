@@ -23,14 +23,17 @@ class ReportController extends Controller
     /**
      * Dashboard สรุปยอด
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $today = now()->toDateString();
         $monthStart = now()->startOfMonth()->toDateString();
+        $chartDays = (int) ($request->chart_days ?? 30);
 
+        // Summary cards
         $salesToday = Invoice::where('type', 'sale')->whereNotIn('status', ['cancelled'])->where('date', $today)->sum('total');
         $salesMonth = Invoice::where('type', 'sale')->whereNotIn('status', ['cancelled'])->where('date', '>=', $monthStart)->sum('total');
         $purchaseMonth = Invoice::where('type', 'purchase')->whereNotIn('status', ['cancelled'])->where('date', '>=', $monthStart)->sum('total');
+        $purchasesToday = Invoice::where('type', 'purchase')->whereNotIn('status', ['cancelled'])->where('date', $today)->sum('total');
 
         $receivable = Invoice::where('type', 'sale')->whereNotIn('status', ['cancelled', 'paid'])
             ->get()->sum(fn ($i) => max(0, $i->net_payable - $i->paid_amount));
@@ -42,39 +45,96 @@ class ReportController extends Controller
             ->map(fn ($p) => ['id' => $p->id, 'code' => $p->code, 'name' => $p->name_th, 'stock' => $p->stockOnHand()])
             ->values();
 
-        $recentInvoices = Invoice::with('partner')
+        // Daily sales chart (last N days)
+        $fromDate = now()->subDays($chartDays - 1)->toDateString();
+        $dailySales = Invoice::where('type', 'sale')
             ->whereNotIn('status', ['cancelled'])
-            ->orderByDesc('date')
-            ->limit(8)
-            ->get();
-
-        // ยอดขายรายเดือน 6 เดือนล่าสุด
-        $monthlySales = Invoice::where('type', 'sale')
-            ->whereNotIn('status', ['cancelled'])
-            ->where('date', '>=', now()->subMonths(5)->startOfMonth()->toDateString())
-            ->selectRaw("DATE_FORMAT(date, '%Y-%m') as ym, SUM(total) as total")
-            ->groupBy('ym')
-            ->orderBy('ym')
+            ->where('date', '>=', $fromDate)
+            ->selectRaw("DATE(date) as date, SUM(total) as total")
+            ->groupBy('date')
+            ->orderBy('date')
             ->get()
-            ->keyBy('ym');
+            ->keyBy(fn ($r) => $r->date instanceof Carbon ? $r->date->toDateString() : (string) $r->date);
 
-        $labels = [];
-        $values = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $ym = now()->subMonths($i)->format('Y-m');
-            $labels[] = now()->subMonths($i)->format('M Y');
-            $values[] = (float) ($monthlySales[$ym]->total ?? 0);
+        $dailyPurchases = Invoice::where('type', 'purchase')
+            ->whereNotIn('status', ['cancelled'])
+            ->where('date', '>=', $fromDate)
+            ->selectRaw("DATE(date) as date, SUM(total) as total")
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->keyBy(fn ($r) => $r->date instanceof Carbon ? $r->date->toDateString() : (string) $r->date);
+
+        $chartLabels = [];
+        $chartSales = [];
+        $chartPurchases = [];
+        for ($i = $chartDays - 1; $i >= 0; $i--) {
+            $d = now()->subDays($i)->toDateString();
+            $chartLabels[] = now()->subDays($i)->format('d/m');
+            $chartSales[] = round((float) ($dailySales[$d]->total ?? 0), 2);
+            $chartPurchases[] = round((float) ($dailyPurchases[$d]->total ?? 0), 2);
         }
+
+        // Today's transactions
+        $todaySales = Invoice::with('partner')
+            ->where('type', 'sale')
+            ->whereNotIn('status', ['cancelled'])
+            ->where('date', $today)
+            ->orderByDesc('id')
+            ->get(['id', 'number', 'date', 'partner_id', 'total', 'status']);
+
+        $todayPurchases = Invoice::with('partner')
+            ->where('type', 'purchase')
+            ->whereNotIn('status', ['cancelled'])
+            ->where('date', $today)
+            ->orderByDesc('id')
+            ->get(['id', 'number', 'date', 'partner_id', 'total', 'status']);
+
+        $todayReceipts = Payment::with('partner')
+            ->where('type', 'in')
+            ->where('date', $today)
+            ->orderByDesc('id')
+            ->get(['id', 'number', 'date', 'partner_id', 'amount', 'method']);
+
+        $todayPayments = Payment::with('partner')
+            ->where('type', 'out')
+            ->where('date', $today)
+            ->orderByDesc('id')
+            ->get(['id', 'number', 'date', 'partner_id', 'amount', 'method']);
+
+        // Top products sold today
+        $topProductsToday = DB::table('invoice_items')
+            ->join('invoices', 'invoices.id', '=', 'invoice_items.invoice_id')
+            ->join('products', 'products.id', '=', 'invoice_items.product_id')
+            ->where('invoices.type', 'sale')
+            ->whereNotIn('invoices.status', ['cancelled'])
+            ->where('invoices.date', $today)
+            ->selectRaw("products.code, products.name_th, SUM(invoice_items.qty) as qty, SUM(invoice_items.amount) as total")
+            ->groupBy('products.id', 'products.code', 'products.name_th')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
         return response()->json([
             'sales_today' => round($salesToday, 2),
+            'purchases_today' => round($purchasesToday, 2),
             'sales_month' => round($salesMonth, 2),
             'purchase_month' => round($purchaseMonth, 2),
             'receivable' => round($receivable, 2),
             'payable' => round($payable, 2),
             'low_stock' => $lowStock,
-            'recent_invoices' => $recentInvoices,
-            'chart' => ['labels' => $labels, 'values' => $values],
+            'chart' => [
+                'labels' => $chartLabels,
+                'sales' => $chartSales,
+                'purchases' => $chartPurchases,
+            ],
+            'today' => [
+                'sales' => $todaySales,
+                'purchases' => $todayPurchases,
+                'receipts' => $todayReceipts,
+                'payments' => $todayPayments,
+                'top_products' => $topProductsToday,
+            ],
         ]);
     }
 
